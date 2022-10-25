@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: sentinel-spring-boot-example
+  cloud:
+    nacos:
+      server-addr: 106.14.225.91:8848
+      discovery:
+        username: nacos
+        password: nacos
+        namespace: a9e92008-aed8-416a-b9ed-b954ffc17ce5
+    sentinel:
+      transport:
+        dashboard: 192.168.31.102:8858
+        port: 8719
+        clientIp: 192.168.31.100
+      datasource:
+        # flow代表流程控制，degrade代表熔断规则，其他：com.alibaba.cloud.sentinel.datasource.RuleType
+        datasource-flow:
+          nacos:
+            server-addr: 106.14.225.91:8848
+            namespace: a9e92008-aed8-416a-b9ed-b954ffc17ce5
+            dataId: sentinel-flow
+            groupId: DEFAULT_GROUP
+            ruleType: flow
+            username: nacos
+            password: nacos
+        datasource-degrade:
+          nacos:
+            server-addr: 106.14.225.91:8848
+            namespace: a9e92008-aed8-416a-b9ed-b954ffc17ce5
+            dataId: sentinel-degrade
+            groupId: DEFAULT_GROUP
+            ruleType: degrade
+            username: nacos
+            password: nacos
+logging:
+  level:
+    com:
+      heartape: debug

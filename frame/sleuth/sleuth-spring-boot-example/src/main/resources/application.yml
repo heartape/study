@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: sleuth-spring-boot-example
+  cloud:
+    nacos:
+      server-addr: 106.14.225.91:8848
+      discovery:
+        username: nacos
+        password: nacos
+        namespace: a8314587-26b7-48b2-ae87-4f20dbcf27eb
+  sleuth:
+    sampler:
+      probability: 1.0
+  zipkin:
+    sender:
+      type: web
+
+logging:
+  level:
+    com:
+      heartape: debug

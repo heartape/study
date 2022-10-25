@@ -1,0 +1,74 @@
+spring:
+  application:
+    name: seata-spring-boot-example
+  cloud:
+    nacos:
+      server-addr: 106.14.225.91:8848
+      username: nacos
+      password: nacos
+      discovery:
+        group: SEATA_GROUP
+        namespace: 38500741-4692-4960-90b4-e564a5c4e890
+        cluster-name: default
+
+  datasource:
+    dynamic:
+      # 设置默认数据源
+      primary: goods-ds
+      # 开启对 seata的支持
+      seata: true
+      datasource:
+        goods-ds:
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          username: root
+          password: root
+          url: jdbc:mysql://106.14.225.91:3308/goods_ds?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true&useSSL=false
+        orders-ds:
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          username: root
+          password: root
+          url: jdbc:mysql://106.14.225.91:3307/orders_ds?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true&useSSL=false
+      seata-mode: at
+    type: com.alibaba.druid.pool.DruidDataSource
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    druid:
+#      goods-ds:
+#        driver-class-name: com.mysql.cj.jdbc.Driver
+#        username: root
+#        password: root
+#        url: jdbc:mysql://127.0.0.1:3306/goods_ds?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true&useSSL=false
+#      account-ds:
+#        driver-class-name: com.mysql.cj.jdbc.Driver
+#        username: root
+#        password: root
+#        url: jdbc:mysql://127.0.0.1:3306/account_ds?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true&useSSL=false
+#
+
+
+seata:
+  registry:
+    type: nacos
+    nacos:
+      server-addr: 106.14.225.91:8848
+      group: SEATA_GROUP
+      namespace: 38500741-4692-4960-90b4-e564a5c4e890
+      username: nacos
+      password: nacos
+  config:
+    type: nacos
+    nacos:
+      server-addr: 106.14.225.91:8848
+      group: SEATA_GROUP
+      namespace: 38500741-4692-4960-90b4-e564a5c4e890
+      username: nacos
+      password: nacos
+      data-id: seata-client
+  # 重点：为true会使得dynamic-datasource-spring-boot-starter数据源代理部分失效，seata主动查找表时会从默认数据源中查找表。
+  # 比如当前配置下会从goods-ds查找orders表
+  # client主动写入不受影响
+  enable-auto-data-source-proxy: false
+
+logging:
+  level:
+    com:
+      heartape: debug

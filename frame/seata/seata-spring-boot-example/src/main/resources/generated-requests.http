@@ -1,0 +1,2 @@
+###
+POST http://localhost:8080/buy?uid=1&goodsId=1&number=5
