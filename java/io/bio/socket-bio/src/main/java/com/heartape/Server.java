@@ -13,11 +13,13 @@ public class Server {
             new Thread(() -> {
                 Connect connect = new Connect(socket);
                 if (connect.create()) {
-                    String s = connect.receiveMessage();
-                    System.out.println(s);
-                    connect.sendMessage("我是服务端\n");
+                    String s;
+                    while ((s = connect.receiveMessage()) != null) {
+                        System.out.println(s);
+                        connect.sendMessage("我是服务端\n");
+                    }
+                    connect.close();
                 }
-                connect.close();
             }).start();
         }
     }
