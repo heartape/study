@@ -1,4 +1,4 @@
-package com.heartape;
+package com.heartape.http;
 
 import javax.net.ssl.SSLSocketFactory;
 import java.io.*;

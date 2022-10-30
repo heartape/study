@@ -1,4 +1,4 @@
-package com.heartape;
+package com.heartape.pool;
 
 import java.io.*;
 import java.net.Inet4Address;
@@ -45,15 +45,13 @@ public class Connect {
         }
     }
 
-    public boolean sendMessage(String message) {
+    public void sendMessage(String message) {
         try {
             bufferedOutputStream.write(message.getBytes());
             bufferedOutputStream.flush();
         } catch (IOException e) {
             System.out.println("连接已断开");
-            return false;
         }
-        return true;
     }
 
     public String receiveMessage() {
