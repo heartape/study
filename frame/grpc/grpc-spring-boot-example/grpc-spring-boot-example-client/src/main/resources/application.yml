@@ -1,0 +1,12 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: grpc-spring-boot-example-client
+
+grpc:
+  client:
+    student:
+      address: static://127.0.0.1:9080
+      negotiation-type: PLAINTEXT

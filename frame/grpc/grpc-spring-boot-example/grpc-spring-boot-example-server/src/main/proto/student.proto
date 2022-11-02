@@ -1,0 +1,34 @@
+// 语法版本
+syntax = "proto3";
+// 当前类映射包路径，用于不同的proto使用相同类名做区分
+package com.heartape.protobuf.student;
+// 生成代码封装类包路径
+option java_package = "com.heartape.protobuf";
+// 生成代码封装类名
+option java_outer_classname="StudentProto";
+
+service StudentService {
+  rpc one(Request) returns (Response) {}
+}
+
+// 请求体
+message Request {
+  // 类型 字段 顺序
+  int32 id = 1;
+  string sex = 2;
+}
+
+// 消息体
+message Response {
+  // 类型 字段 顺序
+  int32 code = 1;
+  string message = 2;
+  Data data = 3;
+}
+
+message Data {
+  string name = 1;
+  int32 phone = 2;
+  // list类型
+  repeated int32 score = 3;
+}

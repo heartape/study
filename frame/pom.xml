@@ -13,6 +13,7 @@
         <module>sentinel</module>
         <module>sleuth</module>
         <module>seata</module>
+        <module>grpc</module>
     </modules>
 
 </project>

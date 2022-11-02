@@ -1,0 +1,10 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: grpc-spring-boot-example-server
+
+grpc:
+  server:
+    port: 9080
