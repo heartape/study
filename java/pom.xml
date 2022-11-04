@@ -11,6 +11,7 @@
 
     <modules>
         <module>io</module>
+        <module>jvm</module>
     </modules>
 
 </project>
