@@ -14,6 +14,7 @@
         <module>sleuth</module>
         <module>seata</module>
         <module>grpc</module>
+        <module>jpa</module>
     </modules>
 
 </project>
