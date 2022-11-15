@@ -15,6 +15,7 @@
         <module>seata</module>
         <module>grpc</module>
         <module>jpa</module>
+        <module>test</module>
     </modules>
 
 </project>
