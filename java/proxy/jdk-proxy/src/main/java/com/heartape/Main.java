@@ -5,7 +5,7 @@ import com.heartape.mapper.UserMapper;
 import com.heartape.proxy.ProxyFactory;
 
 public class Main {
-    public static void main(String[] args) throws ClassNotFoundException {
+    public static void main(String[] args) {
 
         ProxyFactory proxyFactory = new ProxyFactory();
         UserMapper userMapper = proxyFactory.create(UserMapper.class);

@@ -1,11 +1,14 @@
 package com.heartape.proxy;
 
+import lombok.SneakyThrows;
+
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 
 public class ProxyFactory {
+    @SneakyThrows
     @SuppressWarnings("unchecked")
-    public  <T extends BaseMapper<?>> T create(Class<T> mapperClass) throws ClassNotFoundException {
+    public  <T extends BaseMapper<?>> T create(Class<T> mapperClass) {
         // 父接口
         ParameterizedType parameterizedType = (ParameterizedType) mapperClass.getGenericInterfaces()[0];
         // 泛型
