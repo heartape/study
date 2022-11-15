@@ -13,9 +13,15 @@ import javax.annotation.Resource;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
+/**
+ * {@code
+ * @MockBean 表示所有方法均需要mock
+ * @SpyBean 表示只有经过when显式声明的方法均需要mock
+ * }
+ */
 @SpringBootTest
 class UserServiceTest {
-    @MockBean
+    // @MockBean
     @SpyBean
     private UserMapper userMapper;
     @Resource
@@ -26,8 +32,13 @@ class UserServiceTest {
         when(userMapper.selectById(1)).thenReturn(new User(1, "jackson"));
     }
 
+    /**
+     * 稍微复杂一点的场景：
+     * UserMapper在UserService中被调用，在test类中mock UserMapper，依然可以对UserService生效
+     */
     @Test
     void getById() {
+        assertEquals(userMapper.selectById(1).getName(), "jackson");
         assertEquals(userService.getById(1).getName(), "jackson");
     }
 }

@@ -4,6 +4,9 @@ import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * 生成测试类后添加assertEquals方法
+ */
 class MathUtilsTest {
     @BeforeAll
     static void start() {
