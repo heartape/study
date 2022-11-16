@@ -17,6 +17,7 @@
         <module>jpa</module>
         <module>test</module>
         <module>netty</module>
+        <module>rabbit-mq</module>
     </modules>
 
 </project>
