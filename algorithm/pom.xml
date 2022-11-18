@@ -5,6 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.heartape</groupId>
     <artifactId>algorithm</artifactId>
+    <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>analysis</module>
+        <module>title</module>
+    </modules>
 
 </project>

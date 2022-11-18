@@ -10,9 +10,9 @@
 
     <modules>
         <module>algorithm</module>
+        <module>code</module>
         <module>frame</module>
         <module>java</module>
-        <module>multithreading</module>
     </modules>
 
 </project>
