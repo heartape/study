@@ -18,6 +18,7 @@
         <module>test</module>
         <module>netty</module>
         <module>rabbit-mq</module>
+        <module>lucene</module>
     </modules>
 
 </project>
