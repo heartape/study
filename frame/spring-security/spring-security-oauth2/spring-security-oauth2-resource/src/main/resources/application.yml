@@ -1,0 +1,10 @@
+server:
+  port: 8088
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8888
+          jwk-set-uri: http://localhost:8888/oauth2/jwks
+#          public-key-location: classpath:key.pub

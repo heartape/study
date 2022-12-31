@@ -19,6 +19,7 @@
         <module>netty</module>
         <module>rabbit-mq</module>
         <module>lucene</module>
+        <module>spring-security</module>
     </modules>
 
 </project>

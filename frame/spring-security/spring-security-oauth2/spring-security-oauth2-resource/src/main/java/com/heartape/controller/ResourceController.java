@@ -1,0 +1,18 @@
+package com.heartape.controller;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class ResourceController {
+
+    @GetMapping("/email")
+    public String email(){
+        return "success";
+    }
+
+    @GetMapping("/phone")
+    public String phone(){
+        return "success";
+    }
+}

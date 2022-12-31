@@ -1,0 +1,48 @@
+server:
+  port: 8080
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          oauth-center:
+            provider: oauth2
+            client-name: Sign in with oauth-center
+            client-id: 111
+            client-secret: 222
+            # ClientAuthenticationMethod
+            client-authentication-method: client_secret_post
+            # AuthorizationGrantType
+            # code只能使用一次，5分钟(一般很短)未被使用自动过期
+            authorization-grant-type: authorization_code
+            # 认证后回调（由认证服务器调用，并带回授权码） OAuth2LoginAuthenticationFilter
+            redirect-uri: "http://127.0.0.1:8080/login/oauth2/code/{registrationId}"
+            scope: openid, profile, phone, email
+          oauth-center2:
+            provider: oauth2
+            client-name: Sign in with oauth-center2
+            client-id: 111
+            client-secret: 222
+            # ClientAuthenticationMethod
+            client-authentication-method: client_secret_post
+            # AuthorizationGrantType
+            # code只能使用一次，5分钟(一般很短)未被使用自动过期
+            authorization-grant-type: authorization_code
+            # 认证后回调（由认证服务器调用，并带回授权码）
+            redirect-uri: "http://127.0.0.1:8080/authorized"
+            scope: openid, profile, phone, email
+        # ClientRegistrationsBeanDefinitionParser
+        # AuthorizationServerSettings.builder() 默认配置
+        provider:
+          oauth2:
+#            authorization-uri: http://localhost:8888/oauth2/authorize?prompt=consent
+            authorization-uri: http://localhost:8888/oauth2/authorize
+            token-uri: http://localhost:8888/oauth2/token
+            jwk-set-uri: http://localhost:8888/oauth2/jwks
+            user-info-uri: http://localhost:8888/userinfo
+            issuer-uri: http://localhost:8888
+            # IdTokenClaimNames
+            # 请求 /userinfo 时返回的信息
+            user-name-attribute: sub
+            # AuthenticationMethod
+#            user-info-authentication-method: form
