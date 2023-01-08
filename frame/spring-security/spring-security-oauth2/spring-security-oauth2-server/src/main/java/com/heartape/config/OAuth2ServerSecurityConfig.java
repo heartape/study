@@ -17,10 +17,7 @@ import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.oidc.OidcScopes;
 import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.server.authorization.InMemoryOAuth2AuthorizationConsentService;
-import org.springframework.security.oauth2.server.authorization.OAuth2Authorization;
-import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsent;
-import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsentService;
+import org.springframework.security.oauth2.server.authorization.*;
 import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
@@ -91,17 +88,17 @@ public class OAuth2ServerSecurityConfig {
     }
 
     /**
-     * todo:SwitchUserFilter -> targetUrl
      * OidcUserInfoAuthenticationProvider.getClaimsRequestedByScope()
      * @return An instance of Resource Owner save OAuth2AuthorizationConsent(授权信息)
      */
     @Bean
     public OAuth2AuthorizationConsentService authorizationConsentService() {
-        OAuth2AuthorizationConsent oAuth2AuthorizationConsent = OAuth2AuthorizationConsent
-                .withId("111", "1111")
-                .authority(new SimpleGrantedAuthority("s"))
-                .build();
-        return new InMemoryOAuth2AuthorizationConsentService(oAuth2AuthorizationConsent);
+        return new InMemoryOAuth2AuthorizationConsentService();
+    }
+
+    @Bean
+    public OAuth2AuthorizationService authorizationService() {
+        return new InMemoryOAuth2AuthorizationService();
     }
 
     private final Map<String, OidcUserInfo> oidcUserInfoMap =  createUserInfoMap();
@@ -147,8 +144,8 @@ public class OAuth2ServerSecurityConfig {
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
                 .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-                .redirectUri("http://127.0.0.1:8080/login/oauth2/code/oauth-center")
-                .redirectUri("http://127.0.0.1:8080/authorized")
+                .redirectUri("http://192.168.31.2:8080/login/oauth2/code/oauth-center")
+                .redirectUri("http://192.168.31.2:8080/authorized")
                 .scope(OidcScopes.OPENID)
                 .scope(OidcScopes.PROFILE)
                 .scope(OidcScopes.PHONE)
