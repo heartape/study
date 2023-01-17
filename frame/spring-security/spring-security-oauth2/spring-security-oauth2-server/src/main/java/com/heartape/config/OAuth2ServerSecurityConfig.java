@@ -8,14 +8,13 @@ import com.nimbusds.jose.proc.SecurityContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.oidc.OidcScopes;
-import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.authorization.*;
 import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository;
@@ -23,9 +22,9 @@ import org.springframework.security.oauth2.server.authorization.client.Registere
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
-import org.springframework.security.oauth2.server.authorization.oidc.authentication.OidcUserInfoAuthenticationContext;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
+import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
@@ -33,12 +32,8 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
+import java.time.Duration;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
 
 /**
  * OAuth2ClientAuthenticationFilter
@@ -51,6 +46,12 @@ import java.util.function.Function;
 public class OAuth2ServerSecurityConfig {
 
     /**
+     * <li>authorizationEndpoint.consentPage()将自定义授权同意页面，to see
+     * <a href="https://github.com/spring-projects/spring-authorization-server/blob/main/samples/custom-consent-authorizationserver/src/main/java/sample/config/AuthorizationServerConfig.java#L65">AuthorizationServerConfig</a>
+     * and
+     * <a href="https://github.com/spring-projects/spring-authorization-server/blob/main/samples/custom-consent-authorizationserver/src/main/java/sample/web/AuthorizationConsentController.java#L51">AuthorizationConsentController</a>
+     *
+     * <li>oidc(Customizer.withDefaults())为默认配置，不配置会导致部分请求被重定向至/login
      * @return A Spring Security filter chain for the Protocol Endpoints.
      */
     @Bean
@@ -59,24 +60,13 @@ public class OAuth2ServerSecurityConfig {
             throws Exception {
         OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
 
-        // Custom User Info Mapper that retrieves claims from a signed JWT
-        Function<OidcUserInfoAuthenticationContext, OidcUserInfo> userInfoMapper = context -> {
-            OAuth2Authorization oAuth2Authorization = context.get(OAuth2Authorization.class);
-            String principalName = oAuth2Authorization.getPrincipalName();
-            Set<String> authorizedScopes = oAuth2Authorization.getAuthorizedScopes();
-            // todo:通过authorizedScopes筛选
-            return oidcUserInfoMap.get(principalName);
-        };
-
         http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
-                .oidc(oidc -> oidc
-                        .userInfoEndpoint(userinfo -> userinfo
-                                .userInfoMapper(userInfoMapper)
-                        )
-                )
+                // .authorizationEndpoint(authorizationEndpoint -> authorizationEndpoint
+                //         .consentPage("/oauth2/consent")
+                // )
+                .oidc(Customizer.withDefaults())
                 .and()
-                // Redirect to the login page when not authenticated from the
-                // authorization endpoint
+                // Redirect to the login page when not authenticated from the authorization endpoint
                 .exceptionHandling((exceptions) -> exceptions
                         .authenticationEntryPoint(
                                 new LoginUrlAuthenticationEntryPoint("/login"))
@@ -101,41 +91,22 @@ public class OAuth2ServerSecurityConfig {
         return new InMemoryOAuth2AuthorizationService();
     }
 
-    private final Map<String, OidcUserInfo> oidcUserInfoMap =  createUserInfoMap();
-
-    private static Map<String, OidcUserInfo> createUserInfoMap() {
-        Map<String, OidcUserInfo> oidcUserInfoMap =  new ConcurrentHashMap<>();
-        OidcUserInfo oidcUserInfo = OidcUserInfo.builder()
-                .subject("1111")
-                .name("heartape")
-                .givenName("First")
-                .familyName("Last")
-                .middleName("Middle")
-                .nickname("joker")
-                .preferredUsername("user")
-                .profile("https://blog.heartape.com/profile")
-                .picture("https://blog.heartape.com/picture")
-                .website("https://blog.heartape.com")
-                .email("heartape@example.com")
-                .emailVerified(true)
-                .gender("female")
-                .birthdate("1970-01-01")
-                .zoneinfo("Europe/Paris")
-                .locale("en-US")
-                .phoneNumber("+1 (604) 555-1234;ext=5678")
-                .phoneNumberVerified(false)
-                .claim("address", Collections.singletonMap("formatted", "Champ de Mars\n5 Av. Anatole France\n75007 Paris\nFrance"))
-                .updatedAt("1970-01-01T00:00:00Z")
-                .build();
-        oidcUserInfoMap.put(oidcUserInfo.getSubject(), oidcUserInfo);
-        return oidcUserInfoMap;
-    }
-
     /**
+     * 可以针对客户端进行配置{@link ClientSettings}、{@link TokenSettings}
      * @return An instance of RegisteredClientRepository for managing clients.
      */
     @Bean
     public RegisteredClientRepository registeredClientRepository() {
+        ClientSettings clientSettings = ClientSettings
+                .builder()
+                .requireAuthorizationConsent(true)
+                .build();
+
+        TokenSettings tokenSettings = TokenSettings
+                .builder()
+                .accessTokenTimeToLive(Duration.ofDays(7))
+                .build();
+
         RegisteredClient registeredClient = RegisteredClient
                 .withId(UUID.randomUUID().toString())
                 .clientId("111")
@@ -144,19 +115,20 @@ public class OAuth2ServerSecurityConfig {
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
                 .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-                .redirectUri("http://192.168.31.2:8080/login/oauth2/code/oauth-center")
-                .redirectUri("http://192.168.31.2:8080/authorized")
+                .redirectUri("http://127.0.0.1:8080/login/oauth2/code/oauth-center")
                 .scope(OidcScopes.OPENID)
                 .scope(OidcScopes.PROFILE)
                 .scope(OidcScopes.PHONE)
                 .scope(OidcScopes.EMAIL)
                 .scope("message.read")
-                .clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
+                .clientSettings(clientSettings)
+                .tokenSettings(tokenSettings)
                 .build();
         return new InMemoryRegisteredClientRepository(registeredClient);
     }
 
     /**
+     * 当前密钥仅用于测试，可以使用openssl生成
      * @return An instance of com.nimbusds.jose.jwk.source.JWKSource for signing access tokens.
      */
     @Bean
@@ -164,7 +136,8 @@ public class OAuth2ServerSecurityConfig {
         KeyPair keyPair = generateRsaKey();
         RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
         RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
-        RSAKey rsaKey = new RSAKey.Builder(publicKey)
+        RSAKey rsaKey = new RSAKey
+                .Builder(publicKey)
                 .privateKey(privateKey)
                 .keyID(UUID.randomUUID().toString())
                 .build();

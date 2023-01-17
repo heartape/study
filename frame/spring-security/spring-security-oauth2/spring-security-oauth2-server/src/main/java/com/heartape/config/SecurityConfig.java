@@ -34,6 +34,7 @@ public class SecurityConfig {
     }
 
     /**
+     * 该账户的权限不影响oidc
      * @return An instance of UserDetailsService for retrieving users to authenticate.
      */
     @Bean
@@ -42,7 +43,7 @@ public class SecurityConfig {
                 .username("1111")
                 .password("2222")
                 .roles("USER")
-                .authorities("profile", "phone", "email")
+                .authorities("read")
                 .build();
         return new InMemoryUserDetailsManager(userDetails);
     }

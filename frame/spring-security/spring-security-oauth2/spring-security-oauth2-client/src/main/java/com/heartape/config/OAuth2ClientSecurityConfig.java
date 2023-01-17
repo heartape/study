@@ -10,9 +10,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProvider;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProviderBuilder;
-import org.springframework.security.oauth2.client.endpoint.DefaultAuthorizationCodeTokenResponseClient;
-import org.springframework.security.oauth2.client.endpoint.OAuth2AccessTokenResponseClient;
-import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCodeGrantRequest;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
@@ -31,8 +28,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * 第一次oauth2授权时总会出现异常 OAuth2LoginAuthenticationFilter -> authorization_request_not_found
- * 原因：session == null 或 session中不存在org.springframework.security.oauth2.client.web.HttpSessionOAuth2AuthorizationRequestRepository.AUTHORIZATION_REQUEST
+ * 第一次oauth2授权时总会出现异常 OAuth2LoginAuthenticationFilter -> authorization_request_not_found。
+ * 原因：localhost和127.0.0.1是两个不同的地址，导致session丢失。
+ * <p>
+ * 另外，分布式情况下可能面临负载均衡时Session丢失的问题:
+ * <li>当oauth2 client外层的nginx暴露在公网时，可以将需要进行重定向的请求用ip_hash来保证session一致，其余请求可以使用其他方式
+ * <li>当oauth2 client外层的nginx不在公网时，通过精确匹配location进行负载均衡
+ * <li>将session通过redis共享
  */
 @Configuration
 @EnableWebSecurity
@@ -44,15 +46,16 @@ public class OAuth2ClientSecurityConfig {
                 .httpFirewall(new StrictHttpFirewall());
     }
 
+    /**
+     * 如果网关是客户端的话，spring security过滤器在网关之前，所以各微服务的请求需要permitAll()
+     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf().disable()
                 .authorizeHttpRequests()
-                .requestMatchers("/token", "/authorize", "/authorized", "/login/oauth2/**")
-                .permitAll()
-                .anyRequest()
-                .authenticated()
+                .requestMatchers("/", "/authorized", "/login/**").permitAll()
+                .anyRequest().authenticated()
                 .and()
                 .formLogin(Customizer.withDefaults())
                 .oauth2Login(oauth2 -> oauth2
@@ -60,33 +63,23 @@ public class OAuth2ClientSecurityConfig {
                                 .oidcUserService(this.oidcUserService())
 			            )
 			    )
-                // .oauth2Client(withDefaults())
-                .oauth2Client(oauth2 -> oauth2
-                        .authorizationCodeGrant(codeGrant -> codeGrant
-                                .authorizationRequestRepository(this.authorizationRequestRepository())
-                                .accessTokenResponseClient(this.accessTokenResponseClient())
-                                // 创建认证请求
-                                // .authorizationRequestResolver()
-                                // 重定向跳转，oauth2-client发送认证请求"/oauth2/authorization"时,根据选择的registration,重定向到对应的认证服务器"/oauth2/authorize"
-                                // .authorizationRedirectStrategy()
-                        )
-                )
+                .oauth2Client(Customizer.withDefaults())
                 // .logout(logout -> logout.logoutSuccessHandler())
                 .build();
     }
 
     /**
-     * 默认oauth2的请求参数以及state等保存在Session中，分布式情况下可能面临Session共享的问题
+     * 用于管理oauth2认证请求时的status参数
+     * <pre>
+     *     .oauth2Client(oauth2 -> oauth2
+     *                 .authorizationCodeGrant(codeGrant -> codeGrant
+     *                         .authorizationRequestRepository(this.authorizationRequestRepository())
+     *                 )
+     *          )
+     * </pre>
      */
     private AuthorizationRequestRepository<OAuth2AuthorizationRequest> authorizationRequestRepository(){
         return new HttpSessionOAuth2AuthorizationRequestRepository();
-    }
-
-    /**
-     * 解析token请求响应
-     */
-    private OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> accessTokenResponseClient(){
-        return new DefaultAuthorizationCodeTokenResponseClient();
     }
 
     private OAuth2UserService<OidcUserRequest, OidcUser> oidcUserService() {
