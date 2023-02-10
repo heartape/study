@@ -8,8 +8,9 @@ import org.springframework.security.config.annotation.web.configurers.oauth2.ser
 import org.springframework.security.web.SecurityFilterChain;
 
 /**
- * <li>通过jwk-set-uri配置，资源服务器会在启动时从目标地址（一般是认证服务器）获取公钥，
- * to see {@link org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.OAuth2ResourceServerJwtConfiguration}
+ * 通过jwk-set-uri配置，资源服务器会从目标地址（一般是认证服务器）获取公钥，
+ * @see org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.OAuth2ResourceServerJwtConfiguration
+ * @see org.springframework.security.oauth2.jwt.NimbusJwtDecoder.JwkSetUriJwtDecoderBuilder.RestOperationsResourceRetriever#retrieveResource(java.net.URL)
  */
 @Configuration
 @EnableWebSecurity
