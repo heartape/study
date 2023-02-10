@@ -36,10 +36,10 @@ import java.time.Duration;
 import java.util.UUID;
 
 /**
- * OAuth2ClientAuthenticationFilter
- * ClientSecretBasicAuthenticationConverter         -> 从header获取client-id和client-secret
- * FilterChainProxy.VirtualFilterChain.doFilter()   -> 过滤器链
- * OAuth2TokenEndpointFilter                        -> 拦截 /oauth2/token 请求
+ * <li>OAuth2ClientAuthenticationFilter
+ * <li>ClientSecretBasicAuthenticationConverter         -> 从header获取client-id和client-secret
+ * <li>FilterChainProxy.VirtualFilterChain.doFilter()   -> 过滤器链
+ * <li>OAuth2TokenEndpointFilter                        -> 拦截 /oauth2/token 请求
  */
 @Configuration
 @EnableWebSecurity

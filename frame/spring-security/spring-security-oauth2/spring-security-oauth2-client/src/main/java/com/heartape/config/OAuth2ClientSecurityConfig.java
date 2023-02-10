@@ -32,9 +32,9 @@ import java.util.Collection;
  * 原因：localhost和127.0.0.1是两个不同的地址，导致session丢失。
  * <p>
  * 另外，分布式情况下可能面临负载均衡时Session丢失的问题:
- * <li>当oauth2 client外层的nginx暴露在公网时，可以将需要进行重定向的请求用ip_hash来保证session一致，其余请求可以使用其他方式
+ * <li>当oauth2 client外层的nginx暴露在公网时，可以将需要进行重定向的请求用ip_hash来保证session一致
  * <li>当oauth2 client外层的nginx不在公网时，通过精确匹配location进行负载均衡
- * <li>将session通过redis共享
+ * <li>将session共享（官方），相比复杂的代理配置更简介高效，但需要引入新的中间件
  */
 @Configuration
 @EnableWebSecurity
@@ -58,11 +58,7 @@ public class OAuth2ClientSecurityConfig {
                 .anyRequest().authenticated()
                 .and()
                 .formLogin(Customizer.withDefaults())
-                .oauth2Login(oauth2 -> oauth2
-                        .userInfoEndpoint(userInfo -> userInfo
-                                .oidcUserService(this.oidcUserService())
-			            )
-			    )
+                .oauth2Login(Customizer.withDefaults())
                 .oauth2Client(Customizer.withDefaults())
                 // .logout(logout -> logout.logoutSuccessHandler())
                 .build();
@@ -82,6 +78,16 @@ public class OAuth2ClientSecurityConfig {
         return new HttpSessionOAuth2AuthorizationRequestRepository();
     }
 
+    /**
+     * 用于修改授权信息
+     * <pre>
+     * .oauth2Login(oauth2 -> oauth2
+     *        .userInfoEndpoint(userInfo -> userInfo
+     *                .oidcUserService(this.oidcUserService())
+     * 		  )
+     * 	)
+     * </pre>
+     */
     private OAuth2UserService<OidcUserRequest, OidcUser> oidcUserService() {
         final OidcUserService delegate = new OidcUserService();
 
