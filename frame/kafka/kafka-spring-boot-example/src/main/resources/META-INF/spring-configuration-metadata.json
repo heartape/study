@@ -1,0 +1,17 @@
+{
+  "groups": [
+    {
+      "name": "kafka",
+      "type": "com.heartape.config.KafkaProperties",
+      "sourceType": "com.heartape.config.KafkaProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "kafka.topics",
+      "type": "java.util.List<com.heartape.config.KafkaProperties$Topic>",
+      "sourceType": "com.heartape.config.KafkaProperties"
+    }
+  ],
+  "hints": []
+}
