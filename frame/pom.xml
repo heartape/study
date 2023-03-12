@@ -20,6 +20,7 @@
         <module>rabbit-mq</module>
         <module>lucene</module>
         <module>spring-security</module>
+        <module>flink</module>
     </modules>
 
 </project>
