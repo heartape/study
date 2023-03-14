@@ -27,12 +27,3 @@ logging:
   level:
     com:
       heartape: debug
-
-kafka:
-  topics:
-    - name: topic.test.batch
-      num-partitions: 3
-      replication-factor: 1
-    - name: topic.test.single
-      num-partitions: 3
-      replication-factor: 1

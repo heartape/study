@@ -3,7 +3,6 @@ package com.heartape.listener;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.annotation.TopicPartition;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -25,11 +24,8 @@ public class MyKafkaListener {
     @KafkaListener(
             id = "topic-test-batch",
             clientIdPrefix = "clientId",
-            groupId = "testGroup",
-            topicPartitions = {
-                    @TopicPartition(topic = "topic.test.batch", partitions = {"0", "1", "2"}),
-                    @TopicPartition(topic = "topic.test.single", partitions = {"0", "1"})
-            },
+            groupId = "test.batch",
+            topics = "topic.test.batch",
             errorHandler = "",
             containerFactory = "",
             batch = "true"
@@ -41,9 +37,17 @@ public class MyKafkaListener {
         }
     }
 
+    // 手动指定分区，只有有需要时才会
+    // @KafkaListener(
+    //         id = "topic-test-single",
+    //         groupId = "test.single",
+    //         topicPartitions = {
+    //                 @TopicPartition(topic = "topic.test.single", partitions = {"0", "1", "2"})
+    //         }
+    // )
     @KafkaListener(
             id = "topic-test-single",
-            groupId = "test-group",
+            groupId = "test.single",
             topics = "topic.test.single"
     )
     public void single(@Payload ConsumerRecord<?, ?> payload,
