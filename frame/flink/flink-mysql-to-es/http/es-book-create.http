@@ -1,0 +1,30 @@
+PUT 192.168.31.100:9200/book
+Content-Type: application/json
+
+{
+  "mappings": {
+    "dynamic": "strict",
+    "properties": {
+      "id": {
+        "type": "keyword",
+        "index": "false"
+      },
+      "uid": {
+        "type": "keyword",
+        "index": "false"
+      },
+      "title": {
+        "type": "text"
+      },
+      "price": {
+        "type": "integer",
+        "index": "false"
+      },
+      "publish_date": {
+        "type": "date",
+        "format": "strict_date || epoch_millis"
+      }
+    },
+    "date_detection": false
+  }
+}

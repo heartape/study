@@ -1,0 +1,8 @@
+GET 192.168.30.100:9200/book/_search
+Content-Type: application/json
+
+{
+    "query": {
+        "match_all": {}
+    }
+}

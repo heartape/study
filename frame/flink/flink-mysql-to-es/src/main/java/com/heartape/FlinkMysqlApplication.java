@@ -1,9 +1,9 @@
 package com.heartape;
 
-import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
 import com.ververica.cdc.connectors.mysql.source.MySqlSource;
 import com.ververica.cdc.connectors.mysql.table.StartupOptions;
 import com.ververica.cdc.debezium.JsonDebeziumDeserializationSchema;
@@ -23,10 +23,11 @@ import java.util.Map;
 
 public class FlinkMysqlApplication {
 
-    public final static String MYSQL_SERVER = "192.168.31.200";
-    public final static String ES_SERVER = "192.168.31.200";
+    public final static String MYSQL_SERVER = "192.168.30.100";
+    public final static String ES_SERVER = "192.168.30.100";
 
     public static void main(String[] args) {
+
         try (StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment()) {
             MySqlSource<String> mySqlSource = MySqlSource.<String>builder()
                     .hostname(MYSQL_SERVER)
@@ -49,13 +50,17 @@ public class FlinkMysqlApplication {
                     .setBulkFlushBackoffStrategy(FlushBackoffType.EXPONENTIAL, 3, 1000)
                     .build();
 
+            // env
+            //         // 每3000毫秒执行一次checkpoint,需要kafka
+            //         .enableCheckpointing(3000)
+            //         .getCheckpointConfig()
+            //         .setCheckpointStorage("file:///opt/flink/storage");
+
             env
                     .setParallelism(1)
-                    // 每5000毫秒执行一次checkpoint,需要kafka
-                    // .enableCheckpointing(5000)
                     .fromSource(mySqlSource, WatermarkStrategy.noWatermarks(), "MySQL Source")
                     .sinkTo(elasticsearchSink);
-            // .print();
+                    // .print("==>");
 
             env.execute("Print MySQL Binlog");
         } catch (Exception e) {
@@ -63,7 +68,6 @@ public class FlinkMysqlApplication {
         }
     }
 
-    @SuppressWarnings("UnstableApiUsage")
     private static IndexRequest createIndexRequest(String element) {
         JsonObject jsonObject = JsonParser.parseString(element).getAsJsonObject();
         JsonObject after = jsonObject.getAsJsonObject("after");
