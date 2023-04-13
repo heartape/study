@@ -15,6 +15,7 @@
         <module>spring-security-oauth2-server</module>
         <module>spring-security-oauth2-resource</module>
         <module>spring-security-oauth2-client</module>
+        <module>spring-security-oauth2-client-gateway</module>
     </modules>
 
     <properties>

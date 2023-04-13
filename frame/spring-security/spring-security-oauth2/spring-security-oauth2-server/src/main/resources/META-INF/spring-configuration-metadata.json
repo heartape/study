@@ -1,0 +1,22 @@
+{
+  "groups": [
+    {
+      "name": "secret-key.rsa",
+      "type": "com.heartape.config.Oauth2ServerSecretKeyProperties",
+      "sourceType": "com.heartape.config.Oauth2ServerSecretKeyProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "secret-key.rsa.private-key-pem",
+      "type": "java.lang.String",
+      "sourceType": "com.heartape.config.Oauth2ServerSecretKeyProperties"
+    },
+    {
+      "name": "secret-key.rsa.public-key-pem",
+      "type": "java.lang.String",
+      "sourceType": "com.heartape.config.Oauth2ServerSecretKeyProperties"
+    }
+  ],
+  "hints": []
+}

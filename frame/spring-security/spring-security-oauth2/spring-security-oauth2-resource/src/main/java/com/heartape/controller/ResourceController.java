@@ -6,13 +6,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class ResourceController {
 
-    @GetMapping("/email")
-    public String email(){
-        return "success";
-    }
-
-    @GetMapping("/phone")
-    public String phone(){
+    @GetMapping("/check")
+    public String check(){
         return "success";
     }
 }

@@ -1,9 +1,16 @@
 server:
   port: 8088
 spring:
+  application:
+    name: resource-service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.31.100:8848
+        namespace: f2e7b5c7-f463-465c-96de-de2abdd5f979
   security:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://192.168.31.5:8888
-          jwk-set-uri: http://192.168.31.5:8888/oauth2/jwks
+          issuer-uri: http://localhost:8888
+          jwk-set-uri: http://localhost:8888/oauth2/jwks

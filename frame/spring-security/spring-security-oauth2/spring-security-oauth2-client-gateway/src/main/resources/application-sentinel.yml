@@ -1,0 +1,8 @@
+spring:
+  cloud:
+    sentinel:
+      filter:
+        enabled: false
+      eager: true
+      transport:
+        dashboard: http://localhost:8858

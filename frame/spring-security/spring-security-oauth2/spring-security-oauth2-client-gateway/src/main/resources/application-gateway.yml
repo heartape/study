@@ -1,0 +1,30 @@
+spring:
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          # 开启从服务注册中心动态创建路由的功能，利用微服务名称进行路由
+          enabled: true
+      routes:
+#        - id: to-login
+#          uri: lb://gateway-client-service
+#          predicates:
+#            - Path=/**
+#            - Header=Authorization, ^((?!Bearer [\w|-]+).)*
+#          filters:
+#            # 重定向
+#            - RedirectTo=302, /login
+        - id: resource-service
+          uri: lb://resource-service
+          predicates:
+            - Path=/resource/**
+          filters:
+            # 重写地址
+            # - RewritePath=/(?<segment>.*),/$\{segment}
+            # 添加前缀
+            # - PrefixPath=/add
+            # 直接设置地址
+            # - SetPath=/{segment}
+            # 去掉地址中的第一部分
+            - StripPrefix=1
+            - TokenRelay

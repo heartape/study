@@ -1,0 +1,11 @@
+spring:
+  profiles:
+    include: security, gateway, sentinel
+  application:
+    name: gateway-client-service
+  cloud:
+    nacos:
+      discovery:
+        # 启动的nacos的ip和端口
+        server-addr: 192.168.31.100:8848
+        namespace: f2e7b5c7-f463-465c-96de-de2abdd5f979

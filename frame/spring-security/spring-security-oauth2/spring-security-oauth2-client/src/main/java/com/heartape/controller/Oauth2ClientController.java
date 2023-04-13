@@ -1,45 +1,51 @@
 package com.heartape.controller;
 
+import lombok.AllArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * /.well-known/openid-configuration
  */
+@AllArgsConstructor
 @RestController
 public class Oauth2ClientController {
 
     private final ClientRegistrationRepository clientRegistrationRepository;
     private final OAuth2AuthorizedClientService authorizedClientService;
 
-    public Oauth2ClientController(ClientRegistrationRepository clientRegistrationRepository, OAuth2AuthorizedClientService authorizedClientService) {
-        this.clientRegistrationRepository = clientRegistrationRepository;
-        this.authorizedClientService = authorizedClientService;
-    }
+    // private final Map<String, String> cache = new ConcurrentHashMap<>();
 
     @GetMapping("/")
-    public String check(OAuth2AuthenticationToken authentication){
+    public Map<String, String> index(OAuth2AuthenticationToken authenticationToken, Authentication authentication){
         if (authentication == null){
-            return "error";
+            return new HashMap<>();
         }
-        // 用于请求认证服务器和资源服务器，请求头authorization: Bearer xxx
-        OAuth2AuthorizedClient oAuth2AuthorizedClient = authorizedClientService.loadAuthorizedClient(authentication.getAuthorizedClientRegistrationId(), authentication.getName());
-        return oAuth2AuthorizedClient.getAccessToken().getTokenValue();
+        OAuth2AuthorizedClient oAuth2AuthorizedClient = authorizedClientService.loadAuthorizedClient(authenticationToken.getAuthorizedClientRegistrationId(), authenticationToken.getName());
+        // 用于请求resource和server，请求头authorization: Bearer xxx
+        String accessToken = oAuth2AuthorizedClient.getAccessToken().getTokenValue();
+        OidcUser oidcUser = (OidcUser) authentication.getPrincipal();
+        // 用于请求client，请求头authorization: Bearer xxx
+        String idToken = oidcUser.getIdToken().getTokenValue();
+        // this.cache.put(idToken, accessToken);
+        return Map.of("accessToken", accessToken, "idToken", idToken);
     }
 
-    @GetMapping("/userinfo")
-    public OidcUserInfo userinfo(Authentication authentication){
-        OidcUser oidcUser = (OidcUser) authentication.getPrincipal();
-        return oidcUser.getUserInfo();
+    @GetMapping("/check")
+    public String check(){
+        return "success";
     }
 
     /**

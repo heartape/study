@@ -64,7 +64,12 @@ public class OAuth2ServerSecurityConfig {
                 // .authorizationEndpoint(authorizationEndpoint -> authorizationEndpoint
                 //         .consentPage("/oauth2/consent")
                 // )
-                .oidc(Customizer.withDefaults())
+                .oidc(oidc -> oidc
+                        .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint
+                                .userInfoMapper(new UserInfoMapper())
+                        )
+                        .clientRegistrationEndpoint(Customizer.withDefaults())
+                )
                 .and()
                 // Redirect to the login page when not authenticated from the authorization endpoint
                 .exceptionHandling((exceptions) -> exceptions
@@ -115,12 +120,12 @@ public class OAuth2ServerSecurityConfig {
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
                 .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-                .redirectUri("http://127.0.0.1:8080/login/oauth2/code/oauth-center")
+                .redirectUri("http://127.0.0.1/login/oauth2/code/oauth2-server")
+                .redirectUri("http://127.0.0.1:8080/login/oauth2/code/oauth2-server")
                 .scope(OidcScopes.OPENID)
                 .scope(OidcScopes.PROFILE)
                 .scope(OidcScopes.PHONE)
                 .scope(OidcScopes.EMAIL)
-                .scope("message.read")
                 .clientSettings(clientSettings)
                 .tokenSettings(tokenSettings)
                 .build();
@@ -128,18 +133,23 @@ public class OAuth2ServerSecurityConfig {
     }
 
     /**
-     * 当前密钥仅用于测试，可以使用openssl生成
      * @return An instance of com.nimbusds.jose.jwk.source.JWKSource for signing access tokens.
      */
     @Bean
     public JWKSource<SecurityContext> jwkSource() {
+        // 从文件读取，可以使用openssl生成
+        // RSAPublicKey publicKey = SecretKeyUtils.getPublicKeyFromPem(secretKeyProperties.getRsa().getPublicKeyPem());
+        // RSAPrivateKey privateKey = SecretKeyUtils.getPrivateKeyFromPem(secretKeyProperties.getRsa().getPrivateKeyPem());
+
+        // 随机创建，仅用于测试
         KeyPair keyPair = generateRsaKey();
         RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
         RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
         RSAKey rsaKey = new RSAKey
                 .Builder(publicKey)
                 .privateKey(privateKey)
-                .keyID(UUID.randomUUID().toString())
+                // keyID用于关联私钥和公钥
+                .keyID("1")
                 .build();
         JWKSet jwkSet = new JWKSet(rsaKey);
         return new ImmutableJWKSet<>(jwkSet);
