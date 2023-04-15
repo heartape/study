@@ -1,5 +1,5 @@
 ###
-POST http://localhost:8080/producer/message/batch
+POST http://localhost:8080/producer
 Content-Type: application/json
 
-"测试消息-batch"
+"测试消息"

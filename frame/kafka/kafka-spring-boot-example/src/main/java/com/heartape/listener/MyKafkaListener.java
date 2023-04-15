@@ -18,39 +18,34 @@ public class MyKafkaListener {
      * errorHandler = {@link  org.springframework.kafka.listener.KafkaListenerErrorHandler}
      *
      * containerFactory = {@link org.springframework.kafka.config.KafkaListenerContainerFactory}
-     *
-     * @param payloads 批量数据集合
      */
     @KafkaListener(
-            id = "topic-test-batch",
-            clientIdPrefix = "clientId",
-            groupId = "test.batch",
-            topics = "topic.test.batch",
-            errorHandler = "",
+            id = "example",
+            clientIdPrefix = "example-batch",
+            groupId = "test",
+            topics = "test-batch",
+            errorHandler = "kafkaErrorHandler",
             containerFactory = "",
             batch = "true"
     )
-    public void batch(@Payload List<ConsumerRecord<?, ?>> payloads) {
+    public void batch(List<String> list) {
+        log.info("接收{}条消息", list.size());
+        for (String s : list) {
+            log.debug(s);
+        }
+    }
+
+    /**
+     * @param payloads 批量数据集合
+     */
+    public void batchRecord(@Payload List<ConsumerRecord<?, String>> payloads) {
         log.info("接收{}条消息", payloads.size());
         for (ConsumerRecord<?, ?> payload : payloads) {
             log.info("partition:{} - batch接收 - {}", payload.partition(), payload.value());
         }
     }
 
-    // 手动指定分区，只有有需要时才会
-    // @KafkaListener(
-    //         id = "topic-test-single",
-    //         groupId = "test.single",
-    //         topicPartitions = {
-    //                 @TopicPartition(topic = "topic.test.single", partitions = {"0", "1", "2"})
-    //         }
-    // )
-    @KafkaListener(
-            id = "topic-test-single",
-            groupId = "test.single",
-            topics = "topic.test.single"
-    )
-    public void single(@Payload ConsumerRecord<?, ?> payload,
+    public void single(@Payload ConsumerRecord<?, String> payload,
                        @Header(KafkaHeaders.RECEIVED_TOPIC) String topic,
                        @Header(KafkaHeaders.RECEIVED_PARTITION) String partition,
                        @Header(value = KafkaHeaders.RECEIVED_KEY, required = false) String key,
