@@ -13,7 +13,6 @@ public class Kpm {
     private final boolean start = false;
     private final int num = 0;
 
-
     /**
      * 回溯数组，整个kmp算法的核心。
      * 在进行匹配之前，提前将目标子串进行分析，将{@link Kpm#target}逐步拆分前缀和后缀，并缓存至当前数组。

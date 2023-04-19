@@ -13,7 +13,7 @@
     <artifactId>flink</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>flink-mysql-to-es</module>
+        <module>flink-cdc</module>
     </modules>
 
 </project>
