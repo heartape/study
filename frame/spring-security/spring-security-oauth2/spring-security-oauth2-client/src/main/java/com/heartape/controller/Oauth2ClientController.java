@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * /.well-known/openid-configuration
@@ -26,8 +25,6 @@ public class Oauth2ClientController {
     private final ClientRegistrationRepository clientRegistrationRepository;
     private final OAuth2AuthorizedClientService authorizedClientService;
 
-    // private final Map<String, String> cache = new ConcurrentHashMap<>();
-
     @GetMapping("/")
     public Map<String, String> index(OAuth2AuthenticationToken authenticationToken, Authentication authentication){
         if (authentication == null){
@@ -37,7 +34,7 @@ public class Oauth2ClientController {
         // 用于请求resource和server，请求头authorization: Bearer xxx
         String accessToken = oAuth2AuthorizedClient.getAccessToken().getTokenValue();
         OidcUser oidcUser = (OidcUser) authentication.getPrincipal();
-        // 用于请求client，请求头authorization: Bearer xxx
+        // idToken仅用于client获取用户信息
         String idToken = oidcUser.getIdToken().getTokenValue();
         // this.cache.put(idToken, accessToken);
         return Map.of("accessToken", accessToken, "idToken", idToken);

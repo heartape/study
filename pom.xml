@@ -15,4 +15,18 @@
         <module>java</module>
     </modules>
 
+    <repositories>
+        <repository>
+            <id>aliyun</id>
+            <name>aliyun repository</name>
+            <url>https://maven.aliyun.com/repository/central</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
 </project>

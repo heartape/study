@@ -1,10 +1,12 @@
 package com.heartape.config;
 
+import com.heartape.util.SecretKeyUtils;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -132,19 +134,19 @@ public class OAuth2ServerSecurityConfig {
         return new InMemoryRegisteredClientRepository(registeredClient);
     }
 
+    @Value("${secret-key.rsa.public-key-pem}")
+    private String PUB_KEY_PATH;
+    @Value("${secret-key.rsa.private-key-pem}")
+    private String PRI_KEY_PATH;
+
     /**
      * @return An instance of com.nimbusds.jose.jwk.source.JWKSource for signing access tokens.
      */
     @Bean
     public JWKSource<SecurityContext> jwkSource() {
         // 从文件读取，可以使用openssl生成
-        // RSAPublicKey publicKey = SecretKeyUtils.getPublicKeyFromPem(secretKeyProperties.getRsa().getPublicKeyPem());
-        // RSAPrivateKey privateKey = SecretKeyUtils.getPrivateKeyFromPem(secretKeyProperties.getRsa().getPrivateKeyPem());
-
-        // 随机创建，仅用于测试
-        KeyPair keyPair = generateRsaKey();
-        RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
-        RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
+        RSAPublicKey publicKey = SecretKeyUtils.getPublicKeyFromPem(PUB_KEY_PATH);
+        RSAPrivateKey privateKey = SecretKeyUtils.getPrivateKeyFromPem(PRI_KEY_PATH);
         RSAKey rsaKey = new RSAKey
                 .Builder(publicKey)
                 .privateKey(privateKey)
@@ -156,6 +158,11 @@ public class OAuth2ServerSecurityConfig {
     }
 
     /**
+     * <pre>
+     *     KeyPair keyPair = generateRsaKey();
+     *     RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
+     *     RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
+     * </pre>
      * @return An instance of java.security.KeyPair with keys generated on startup used to create the JWKSource above.
      */
     private static KeyPair generateRsaKey() {

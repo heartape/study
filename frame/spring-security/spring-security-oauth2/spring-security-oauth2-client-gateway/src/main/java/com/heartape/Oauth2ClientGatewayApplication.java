@@ -6,10 +6,10 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 @SpringBootApplication
 @EnableDiscoveryClient
-public class GatewayClientApplication {
+public class Oauth2ClientGatewayApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(GatewayClientApplication.class, args);
+        SpringApplication.run(Oauth2ClientGatewayApplication.class, args);
     }
 
 }
