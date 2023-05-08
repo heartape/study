@@ -112,7 +112,7 @@ public class FlinkMysqlApplication {
         private Long id;
         private String title;
         private BigDecimal price;
-        private LocalDate publish_date;
+        private Integer publish_date;
 
         public Map<String, Object> toMap(){
             return Map.of("id", id.toString(), "title", title, "price", price, "publish_date", publish_date);

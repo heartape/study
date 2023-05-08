@@ -4,7 +4,9 @@ package java.lang;
  * 由于双亲委派模型，java.lang等少数的包是由Bootstrap ClassLoader进行加载，
  * 这些包下的类的加载会一步步传递到Bootstrap ClassLoader。
  */
-public class String {
+// 因为影响其他模块所以注释掉了
+//public class String {
+public class StringTest {
 
     static {
         System.out.println("装载自定义String");
