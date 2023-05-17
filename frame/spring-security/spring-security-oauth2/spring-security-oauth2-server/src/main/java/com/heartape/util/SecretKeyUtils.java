@@ -8,6 +8,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.security.KeyFactory;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
@@ -19,6 +21,27 @@ import java.util.Base64;
  */
 @Slf4j
 public class SecretKeyUtils {
+
+    /**
+     * <pre>
+     *     KeyPair keyPair = generateRsaKey();
+     *     RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
+     *     RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
+     * </pre>
+     * @return An instance of java.security.KeyPair with keys generated on startup used to create the JWKSource above.
+     */
+    private static KeyPair generateRsaKey() {
+        KeyPair keyPair;
+        try {
+            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+            keyPairGenerator.initialize(2048);
+            keyPair = keyPairGenerator.generateKeyPair();
+        }
+        catch (Exception ex) {
+            throw new IllegalStateException(ex);
+        }
+        return keyPair;
+    }
 
     /**
      * 获取私匙
@@ -46,7 +69,7 @@ public class SecretKeyUtils {
 
     private static byte[] readKeyFile(String filename){
         String dir = System.getProperty("user.dir");
-        String path = dir + filename;
+        String path = dir + "/frame/spring-security/spring-security-oauth2/spring-security-oauth2-server" + filename;
         StringBuilder stringBuilder = new StringBuilder();
         try(BufferedReader br = new BufferedReader(new FileReader(path))) {
             String s = br.readLine();

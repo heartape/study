@@ -1,4 +1,5 @@
-package java.lang;
+// package java.lang;
+package java.lang1;
 
 /**
  * 由于双亲委派模型，java.lang等少数的包是由Bootstrap ClassLoader进行加载，

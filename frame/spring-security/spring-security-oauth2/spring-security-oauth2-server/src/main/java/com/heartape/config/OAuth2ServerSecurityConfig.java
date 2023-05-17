@@ -30,8 +30,6 @@ import org.springframework.security.oauth2.server.authorization.settings.TokenSe
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.time.Duration;
@@ -155,27 +153,6 @@ public class OAuth2ServerSecurityConfig {
                 .build();
         JWKSet jwkSet = new JWKSet(rsaKey);
         return new ImmutableJWKSet<>(jwkSet);
-    }
-
-    /**
-     * <pre>
-     *     KeyPair keyPair = generateRsaKey();
-     *     RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
-     *     RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
-     * </pre>
-     * @return An instance of java.security.KeyPair with keys generated on startup used to create the JWKSource above.
-     */
-    private static KeyPair generateRsaKey() {
-        KeyPair keyPair;
-        try {
-            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-            keyPairGenerator.initialize(2048);
-            keyPair = keyPairGenerator.generateKeyPair();
-        }
-        catch (Exception ex) {
-            throw new IllegalStateException(ex);
-        }
-        return keyPair;
     }
 
     /**

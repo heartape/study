@@ -10,6 +10,9 @@
 
     <modules>
         <module>memory-merge-request</module>
+        <module>io</module>
+        <module>jvm</module>
+        <module>proxy</module>
     </modules>
 
 </project>

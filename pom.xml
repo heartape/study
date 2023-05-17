@@ -12,7 +12,6 @@
         <module>algorithm</module>
         <module>code</module>
         <module>frame</module>
-        <module>java</module>
     </modules>
 
 </project>
