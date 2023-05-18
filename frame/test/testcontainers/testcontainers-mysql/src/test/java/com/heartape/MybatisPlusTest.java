@@ -2,8 +2,6 @@ package com.heartape;
 
 import com.heartape.mapper.BookMapper;
 import com.heartape.entity.Book;
-import org.junit.ClassRule;
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,16 +18,16 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * spring.datasource.url: 基于url自动创建容器
+ * spring.datasource.url: 基于url自动创建容器，无需代码创建容器
  * TC_INITSCRIPT: 初始脚本
  * TC_INITFUNCTION: 初始方法
  */
 @SpringBootTest(
         classes = Application.class,
         properties = {
-                // "spring.datasource.url=jdbc:tc:mysql:5.7.34:///test?
-                // TC_INITSCRIPT=somepath/book.sql&
-                // TC_INITFUNCTION=com.heartape.xxx::sampleInitFunction"
+                // "spring.datasource.url=jdbc:tc:mysql:5.7.34:///test"
+                // + "?TC_INITSCRIPT=docker/book.sql"
+                // + "&TC_INITFUNCTION=com.heartape.xxx::sampleInitFunction"
         })
 @ActiveProfiles("test")
 @Testcontainers
