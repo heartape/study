@@ -30,6 +30,7 @@ public class SecretKeyUtils {
      * </pre>
      * @return An instance of java.security.KeyPair with keys generated on startup used to create the JWKSource above.
      */
+    @SuppressWarnings("unused")
     private static KeyPair generateRsaKey() {
         KeyPair keyPair;
         try {
@@ -67,9 +68,10 @@ public class SecretKeyUtils {
         return (RSAPublicKey)kf.generatePublic(keySpec);
     }
 
+    @SuppressWarnings("UnusedAssignment")
     private static byte[] readKeyFile(String filename){
         String dir = System.getProperty("user.dir");
-        String path = dir + "/frame/spring-security/spring-security-oauth2/spring-security-oauth2-server" + filename;
+        String path = dir + filename;
         StringBuilder stringBuilder = new StringBuilder();
         try(BufferedReader br = new BufferedReader(new FileReader(path))) {
             String s = br.readLine();
