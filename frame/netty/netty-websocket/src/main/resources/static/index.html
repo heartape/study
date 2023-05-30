@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Websocket</title>
+</head>
+<body>
+    <div id="app" style="width: 700px; height: 500px; margin: 50px auto">
+        <label for="token" style="margin-left: 120px"></label>
+        token:<input type="text" id="token" style="width: 300px; margin-bottom: 20px">
+        <button onclick="setToken()">设置token</button>
+        <a href="chat.html">开始聊天</a>
+    </div>
+</body>
+<script>
+    const token = document.getElementById(`token`);
+
+    function setToken() {
+        localStorage.setItem('X-Token', token.value);
+    }
+</script>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Websocket</title>
+</head>
+<body>
+    <div id="app" style="width: 610px; height: 500px; margin: 50px auto">
+        <label for="uid-input" style="margin-left: 120px"></label>
+        uid:<input type="text" id="uid-input">
+        <div style="margin-top: 30px">
+            <div id="message" style="overflow: scroll; overflow-x: hidden; height: 500px; width: 600px; border: 1px solid dimgray; margin-bottom: 10px"></div>
+            <label for="message-input"></label>
+            <input type="text" id="message-input" style="width: 500px; height: 50px; font-size: 20px">
+            <button onclick="send()" style="height: 55px; width: 90px; font-size: 18px">发送</button>
+        </div>
+    </div>
+</body>
+<script>
+    const uidInput = document.getElementById(`uid-input`);
+    const messageInput = document.getElementById(`message-input`);
+    const message = document.getElementById(`message`);
+
+    // const url = new URL(`ws://127.0.0.1:8080/ws?token=` + token);
+    const url = new URL(`ws://127.0.0.1:8080/ws`);
+    const ws = new WebSocket(url);
+
+    // 发送
+    function send() {
+        let uid = uidInput.value;
+        let message = messageInput.value;
+        const token = localStorage.getItem('X-Token');
+        const data = {
+            "type": "TEXT",
+            "receiver": uid,
+            "receiverType": "PERSON",
+            "timestamp": new Date(),
+            "content": message,
+            "token": token,
+        };
+        const jsonString = JSON.stringify(data);
+        ws.send(jsonString);
+    }
+
+    ws.onopen = function(){
+        setMessageInnerHTML("tip: open");
+        const token = localStorage.getItem('X-Token');
+        const data = {
+            "type": "HELLO",
+            "timestamp": new Date(),
+            "token": token,
+        };
+        const jsonString = JSON.stringify(data);
+        ws.send(jsonString);
+    }
+    ws.onmessage = function(res){
+        const parse = JSON.parse(res.data);
+        if (parse.type === 'HELLO'){
+            setMessageInnerHTML(parse.clientId + '上线' + ' <span style="color: gray; font-size: 12px">' + parse.timestamp + '</span>');
+        } else {
+            setMessageInnerHTML(parse.clientId + ': ' + parse.content + ' <span style="color: gray; font-size: 12px">' + parse.timestamp + '</span>');
+        }
+    }
+    ws.onclose = function(){
+        setMessageInnerHTML("tip: close");
+    }
+    ws.onerror = function(e){
+    }
+    window.onbeforeunload = function() {
+        ws.close();
+    }
+
+    // 将消息显示在网页上
+    function setMessageInnerHTML(innerHTML) {
+        message.innerHTML += innerHTML + '<br/>';
+    }
+</script>
+</html>

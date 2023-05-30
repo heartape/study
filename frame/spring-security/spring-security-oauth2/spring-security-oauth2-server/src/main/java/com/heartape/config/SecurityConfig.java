@@ -41,10 +41,16 @@ public class SecurityConfig {
     public UserDetailsService userDetailsService() {
         UserDetails userDetails = User.withDefaultPasswordEncoder()
                 .username("1111")
-                .password("2222")
+                .password("1111")
                 .roles("USER")
                 .authorities("read")
                 .build();
-        return new InMemoryUserDetailsManager(userDetails);
+        UserDetails adminDetails = User.withDefaultPasswordEncoder()
+                .username("2222")
+                .password("2222")
+                .roles("ADMIN")
+                .authorities("read", "write")
+                .build();
+        return new InMemoryUserDetailsManager(userDetails, adminDetails);
     }
 }
