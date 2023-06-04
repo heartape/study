@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>index</title>
+<!--    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>-->
+<!--    <script src="https://raw.githubusercontent.com/jmesnil/stomp-websocket/master/lib/stomp.min.js"></script>-->
+    <script src="js/sockjs.min.js"></script>
+    <script src="js/stomp.min.js"></script>
+</head>
+<body>
+    <div id="app" style="width: 610px; height: 500px; margin: 50px auto">
+        <div style="margin-top: 30px">
+            <div id="message" style="overflow: scroll; overflow-x: hidden; height: 500px; width: 600px; border: 1px solid dimgray; margin-bottom: 10px"></div>
+            <label for="message-input"></label>
+            <input type="text" id="message-input" style="width: 500px; height: 50px; font-size: 20px">
+            <button onclick="send()" style="height: 55px; width: 90px; font-size: 18px">send</button>
+        </div>
+    </div>
+</body>
+<script>
+    const messageInput = document.getElementById(`message-input`);
+    const message = document.getElementById(`message`);
+    const token = localStorage.getItem('X-Token');
+
+    // http://jmesnil.net/stomp-websocket/doc/
+    // 某些浏览器不支持websocket
+    // const sock = new SockJS('http://127.0.0.1:8088/chat');
+    // const client = Stomp.over(sock);
+    const client = Stomp.client("ws://127.0.0.1:8088/chat");
+    client.heartbeat.outgoing = 20000; // client will send heartbeats every 20000ms
+    client.heartbeat.incoming = 0;
+    let id;
+    // 'X-XSRF-TOKEN'
+    // '_csrf'
+    client.connect({'Authorization': 'Bearer ' + token}, function(flame){
+        id = flame.headers['user-name'];
+        subscribe(id, "/send/group/message");
+        subscribe(id, "/receive/group/message");
+    }, function (error) {
+        console.log('connect error:' + error);
+    })
+
+    function send() {
+        client.send("/send/group/message", {'Authorization': 'Bearer ' + token, id}, messageInput.value);
+    }
+
+    function subscribe(id, route) {
+        client.subscribe(route, function(flame) {
+            setMessageInnerHTML(flame.body);
+        }, {'Authorization': 'Bearer ' + token, id})
+    }
+
+    function disconnect() {
+        client.disconnect();
+    }
+
+    function setMessageInnerHTML(innerHTML) {
+        message.innerHTML += innerHTML + '<br/>';
+    }
+</script>
+</html>

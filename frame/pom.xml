@@ -21,6 +21,7 @@
         <module>lucene</module>
         <module>spring-security</module>
         <module>flink</module>
+        <module>spring-websocket</module>
     </modules>
 
     <build>
