@@ -136,6 +136,7 @@ public class OAuth2ServerSecurityConfig {
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
                 .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
+                .redirectUri("http://127.0.0.1:8079/authorized/code")
                 .redirectUri("http://127.0.0.1/login/oauth2/code/oauth2-server")
                 .redirectUri("http://127.0.0.1:8080/login/oauth2/code/oauth2-server")
                 .scope(OidcScopes.OPENID)

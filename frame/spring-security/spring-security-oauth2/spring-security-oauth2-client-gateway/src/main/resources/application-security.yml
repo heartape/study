@@ -14,7 +14,8 @@ spring:
             # code只能使用一次，5分钟(一般很短)未被使用自动过期
             authorization-grant-type: authorization_code
             # 认证后回调（由认证服务器调用，并带回授权码） OAuth2LoginAuthenticationFilter
-            redirect-uri: "http://127.0.0.1/login/oauth2/code/{registrationId}"
+            redirect-uri: http://127.0.0.1/login/oauth2/code/{registrationId}
+#            redirect-uri: http://127.0.0.1:8079/authorized/code
             scope: openid, profile, phone, email
         # ClientRegistrationsBeanDefinitionParser
         # AuthorizationServerSettings.builder() 默认配置

@@ -1,0 +1,13 @@
+###
+POST /oauth2/token HTTP/1.1
+Host: localhost:8888
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=authorization_code&code=xeBfmUQIw9pKbZQ6Ko7rv_1CYGk04Z4nGkBquH2XXhYGWK80x5BW_MR6_1t1o9rBtlUqUntcteE9ie-yYhUjX1NzvB2NxExvlM6Dm-qL-DzS-KEEBr8xqOXDA8er_8ZC&client_id=111&client_secret=222&redirect_uri=http://127.0.0.1:8079/authorized/token
+
+###
+POST /oauth2/token HTTP/1.1
+Host: localhost:8888
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=refresh_token&refresh_token=kPe4fhbojzXt5DEbly7M1u9U5a0YVz7x4OafL9-i2ERf5smQYmJuCTfYlpY2z4eSWJyZKjl8HrAkY9wtengD_3lt4KCnGlRocuPUfCu0s3coPerQt4cexHt4NgnPnm9U&client_id=111&client_secret=222
