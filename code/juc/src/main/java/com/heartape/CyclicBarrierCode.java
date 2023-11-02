@@ -7,6 +7,10 @@ import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * 类似于划定起跑线，一批一批。
+ * 可以用于集群下的配置同步等操作（等待所有负载同时更新）
+ */
 public class CyclicBarrierCode {
 
     public static void main(String[] args) {
