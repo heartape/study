@@ -13,6 +13,7 @@
         <module>io</module>
         <module>jvm</module>
         <module>proxy</module>
+        <module>juc</module>
     </modules>
 
     <build>

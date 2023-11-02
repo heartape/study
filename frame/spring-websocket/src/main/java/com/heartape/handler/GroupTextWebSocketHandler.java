@@ -7,14 +7,13 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 @SuppressWarnings("NullableProblems")
 @Slf4j
 public class GroupTextWebSocketHandler extends TextWebSocketHandler {
 
-    private final static Map<String, WebSocketSession> SESSION_POOL = new ConcurrentHashMap<>();
+    private final Map<String, WebSocketSession> SESSION_POOL = new ConcurrentHashMap<>();
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
@@ -26,7 +25,8 @@ public class GroupTextWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        SESSION_POOL.put(UUID.randomUUID().toString(), session);
+        SESSION_POOL.put(session.getId(), session);
+        log.info("{}", SESSION_POOL.size());
         for (WebSocketSession webSocketSession : SESSION_POOL.values()) {
             webSocketSession.sendMessage(new TextMessage("hello world!"));
         }
@@ -35,7 +35,7 @@ public class GroupTextWebSocketHandler extends TextWebSocketHandler {
     @SuppressWarnings("EmptyTryBlock")
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        try (WebSocketSession webSocketSession = SESSION_POOL.remove("")) {
+        try (WebSocketSession ignored = SESSION_POOL.remove(session.getId())) {
         }
     }
 }
