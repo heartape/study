@@ -8,22 +8,51 @@ import java.util.concurrent.TimeUnit;
  */
 public class SemaphoreCode {
 
-
     public static void main(String[] args) {
-        Semaphore semaphore = new Semaphore(2, true);
+        strict();
+        tokenBucket();
+    }
 
+    public final static Semaphore strictSemaphore = new Semaphore(2, true);
+
+    public static void strict() {
         for (int i = 0; i < 5; i++) {
             new Thread(() -> {
                 try {
-                    semaphore.acquire();
+                    strictSemaphore.acquire();
                     TimeUnit.SECONDS.sleep(3);
                     System.out.println("finish");
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 } finally {
-                    semaphore.release();
+                    strictSemaphore.release();
                 }
             }).start();
         }
+    }
+
+    public final static Semaphore tokenBucketSemaphore = new Semaphore(2, true);
+
+    public static void tokenBucket() {
+
+        for (int i = 0; i < 5; i++) {
+            new Thread(() -> {
+                try {
+                    tokenBucketSemaphore.acquire();
+                    System.out.println("finish");
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }).start();
+        }
+
+        new Thread(() -> {
+            for (;;) {
+                tokenBucketSemaphore.release();
+                try {
+                    TimeUnit.SECONDS.sleep(1);
+                } catch (InterruptedException ignore) {}
+            }
+        }).start();
     }
 }
