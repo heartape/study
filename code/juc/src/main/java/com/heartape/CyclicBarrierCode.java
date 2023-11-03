@@ -6,27 +6,27 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 类似于划定起跑线，一批一批。
- * 可以用于集群下的配置同步操作（等待所有负载同时更新），利用回调更新配置，然后让所有负载读取配置
+ * 可以用于集群下的配置同步操作（等待所有负载同时更新），利用回调更新配置，然后让所有负载读取配置。
+ * 或者和并请求,在回调中进行合并。
  */
 public class CyclicBarrierCode {
 
     public static void main(String[] args) {
-        simple();
+        order();
         sync();
     }
 
-    public static void simple() {
-        BlockingQueue<Integer> queue = new ArrayBlockingQueue<>(2);
+    public static void order() {
+        BlockingQueue<Order> queue = new ArrayBlockingQueue<>(2);
         CyclicBarrier cyclicBarrier = new CyclicBarrier(2, () -> {
-            Integer i1 = queue.poll();
-            Integer i2 = queue.poll();
-            System.out.println("merge start: " + i1 + " " + i2);
-            try {
-                TimeUnit.SECONDS.sleep(3);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            System.out.println("merge end: " + i1 + " " + i2);
+            Order order1 = queue.poll();
+            Order order2 = queue.poll();
+            assert order1 != null;
+            assert order2 != null;
+            int count = order1.count + order2.count;
+            order1.status = 1;
+            order2.status = 1;
+            System.out.println("merge count :" + order1.count + "+" + order2.count + "=" + count);
         });
 
         AtomicInteger atomicInteger = new AtomicInteger(1);
@@ -34,17 +34,38 @@ public class CyclicBarrierCode {
             new Thread(() -> {
                 int index = atomicInteger.getAndAdd(1);
                 try {
-                    queue.put(index);
-                    System.out.println("put " + index);
+                    Order order = new Order(index, 1, index, 0);
+                    queue.put(order);
+                    System.out.println("put order:" + index);
                     cyclicBarrier.await();
+                    if (order.status == 1) {
+                        System.out.println("success order:" + index);
+                    } else if (order.status == -1) {
+                        System.out.println("fail order:" + index);
+                    }
                 }
                 catch (InterruptedException | BrokenBarrierException e) {
                     e.printStackTrace();
                 }
-                System.out.println("end " + index);
             }).start();
         }
     }
+
+    static class Order {
+        int id;
+        int goodsId;
+        int count;
+        int status;
+
+        public Order(int id, int goodsId, int count, int status) {
+            this.id = id;
+            this.goodsId = goodsId;
+            this.count = count;
+            this.status = status;
+        }
+    }
+
+
 
     public static Config config = null;
 
