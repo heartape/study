@@ -4,7 +4,9 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 /**
- * 类似于局部和整体的关系，整体等待局部完成，用门闩来形容很形象
+ * 用门闩来形容很形象。
+ * 类似于局部和整体的关系，整体等待局部完成。
+ * 同时也可以理解为对任务重要性的区分，重要的任务会优先执行。
  */
 public class CountDownLatchCode {
 
